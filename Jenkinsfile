@@ -27,12 +27,10 @@ pipeline {
             }
         }
 
-        stage('Dependency Check') {
+        stage(' OWASP Dependency Check') {
             steps {
-                script {
-                    
-                     sh 'npm audit --audit-level=high || true'
-                }
+                dependencyCheck additionalArguments: '--scan ./', odcInstallation: 'OWASP'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
 
