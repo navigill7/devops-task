@@ -15,7 +15,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: "${env.BRANCH_NAME}", url: 'https://github.com/navigill7/logo-server.git'
+                git branch: "${env.BRANCH_NAME}", url: 'https://github.com/navigill7/devops-task.git'
             }
         }
 
