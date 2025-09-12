@@ -7,7 +7,7 @@ pipeline {
         AWS_ACCESS_KEY_ID = credentials('aws-access-key')
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
         ECR_REPO = "devops_task"
-        SONARQUBE = "Sonar" 
+        SONARQUBE =  tool "Sonar" 
         IMAGE_TAG = "${env.BUILD_NUMBER}"
         HELM_REPO = "https://github.com/navigill7/devops-task.git" 
     }
@@ -22,7 +22,7 @@ pipeline {
         stage('Code Quality - SonarQube') {
             steps {
                 withSonarQubeEnv('Sonar') {
-                    sh 'sonar-scanner -Dsonar.projectName=devops_task -Dsonar.projectKey=devops_task'
+                    sh '$SONARQUBE/bin/sonar-scanner  -Dsonar.projectName=devops_task -Dsonar.projectKey=devops_task'
                 }
             }
         }
