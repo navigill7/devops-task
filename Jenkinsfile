@@ -92,13 +92,17 @@ pipeline {
                     script {
                         withCredentials([usernamePassword(credentialsId: 'Github_Auth', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                             sh """
-                            # Clone the Helm repository (replace with your Helm repo URL)
-                            git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/navigill7/devops-task.git helm-repo
+                            # Clone the Helm repository using credential helper to avoid interpolation
+                            git config --global credential.helper '!f() { echo username=\\${GIT_USERNAME}; echo password=\\${GIT_PASSWORD}; }'
+                            git clone https://github.com/navigill7/devops-task.git helm-repo
                             cd helm-repo
+
+                            # Navigate to the directory containing values.yaml (adjust path if needed)
+                            cd Deployment || { echo "Error: Deployment directory not found"; exit 1; }
 
                             # Check if values.yaml exists
                             if [ ! -f values.yaml ]; then
-                                echo "Error: values.yaml not found in the repository"
+                                echo "Error: values.yaml not found in Deployment directory"
                                 exit 1
                             fi
 
@@ -113,9 +117,10 @@ pipeline {
                             # Add, commit, and push changes
                             git add values.yaml
                             git commit -m "Update image to ${ECR_REPO}:${IMAGE_TAG}" || echo "No changes to commit"
-
-                            # Push to the correct branch
                             git push origin ${env.BRANCH_NAME}
+
+                            # Clean up credential helper
+                            git config --global --unset credential.helper
                             """
                         }
                     }
