@@ -90,14 +90,14 @@ pipeline {
             steps {
                 dir('Deployment') {
                     script {
-                        withCredentials([usernamePassword(credentialsId: 'Github_Auth', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                        withCredentials([usernamePassword(credentialsId: 'Github_Auth', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD'),
+                                        string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID')]) {
                             sh """
-                            # Clone the Helm repository using credential helper to avoid interpolation
-                            git config --global credential.helper '!f() { echo username=\\${GIT_USERNAME}; echo password=\\${GIT_PASSWORD}; }'
-                            git clone https://github.com/navigill7/devops-task.git helm-repo
+                            # Clone the Helm repository using HTTPS with credentials
+                            git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/navigill7/devops-task.git helm-repo
                             cd helm-repo
 
-                            # Navigate to the directory containing values.yaml (adjust path if needed)
+                            # Navigate to the Deployment directory
                             cd Deployment || { echo "Error: Deployment directory not found"; exit 1; }
 
                             # Check if values.yaml exists
@@ -117,17 +117,13 @@ pipeline {
                             # Add, commit, and push changes
                             git add values.yaml
                             git commit -m "Update image to ${ECR_REPO}:${IMAGE_TAG}" || echo "No changes to commit"
-                            git push origin ${env.BRANCH_NAME}
-
-                            # Clean up credential helper
-                            git config --global --unset credential.helper
+                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/navigill7/devops-task.git ${env.BRANCH_NAME}
                             """
                         }
                     }
                 }
             }
         }
-
 
 
 
