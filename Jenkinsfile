@@ -61,30 +61,30 @@ pipeline {
             }
         }
 
-        stage('Terraform Apply EKS Infra') {
-            steps {
-                dir("EKS_INFRA/eks") {
-                    withCredentials([
-                        string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
-                        string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')
-                    ]) {
-                        script {
-                            sh """
-                            export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-                            export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-                            export AWS_REGION=${AWS_REGION}
+        // stage('Terraform Apply EKS Infra') {
+        //     steps {
+        //         dir("EKS_INFRA/eks") {
+        //             withCredentials([
+        //                 string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
+        //                 string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')
+        //             ]) {
+        //                 script {
+        //                     sh """
+        //                     export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+        //                     export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+        //                     export AWS_REGION=${AWS_REGION}
                             
-                            terraform init -input=false
-                            terraform validate
-                            terraform plan -out=tfplan -input=false
-                            terraform apply -input=false -auto-approve tfplan || true
-                            terraform output eks_cluster_endpoint || echo 'EKS cluster not ready'
-                            """
-                        }
-                    }
-                }
-            }
-        }
+        //                     terraform init -input=false
+        //                     terraform validate
+        //                     terraform plan -out=tfplan -input=false
+        //                     terraform apply -input=false -auto-approve tfplan || true
+        //                     terraform output eks_cluster_endpoint || echo 'EKS cluster not ready'
+        //                     """
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Update Helm Chart') {
             steps {
