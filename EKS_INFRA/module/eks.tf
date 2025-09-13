@@ -38,12 +38,12 @@ resource "aws_eks_cluster" "eks" {
      
    }
 
-   encryption_config {
-    provider {
-      key_arn = aws_kms_key.eks_kms_key[0].arn
-    }
-    resources = ["secrets"]
-   }
+  #  encryption_config {
+  #   provider {
+  #     key_arn = aws_kms_key.eks_kms_key[0].arn
+  #   }
+  #   resources = ["secrets"]
+  #  }
 
    
 
