@@ -21,7 +21,7 @@ pipeline {
 
         stage('Code Quality - SonarQube') {
             steps {
-                withSonarQubeEnv('Sonar') {
+                withSonarQubeEnv('SonarQube') {
                     sh '$SONARQUBE/bin/sonar-scanner  -Dsonar.projectName=devops_task -Dsonar.projectKey=devops_task'
                 }
             }
