@@ -6,6 +6,7 @@ pipeline {
         AWS_ACCOUNT_ID = credentials('aws-account-id')  
         AWS_ACCESS_KEY_ID = credentials('aws-access-key')
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
+
         ECR_REPO = "devops_task"
         SONARQUBE =  tool "SonarQube" 
         IMAGE_TAG = "${env.BUILD_NUMBER}"
@@ -85,33 +86,46 @@ pipeline {
             }
         }
 
-        // stage('Update Helm Chart') {
-        //     steps {
-        //         script {
-        //             sh """
-        //             git clone $HELM_REPO helm-chart
-        //             cd helm-chart
-        //             sed -i 's|image: .*|image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG|g' values.yaml
-        //             git config user.email "jenkins@ci.com"
-        //             git config user.name "jenkins"
-        //             git commit -am "Update image to $IMAGE_TAG"
-        //             git push origin main
-        //             """
-        //         }
-        //     }
-        // }
+        stage('Update Helm Chart') {
+            steps {
+                dir('Deployment') {
+                    script {
+                        withCredentials([usernamePassword(credentialsId: 'Github_Auth', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                            sh """
+                            # Clone the Helm repository (replace with your Helm repo URL)
+                            git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/navigill7/devops-task.git helm-repo
+                            cd helm-repo
 
-        // stage('Trigger ArgoCD Deployment') {
-        //     steps {
-        //         script {
-        //             // Sync ArgoCD with updated Helm chart
-        //             sh """
-        //             argocd login <ARGOCD_SERVER> --username <ARGOCD_USER> --password <ARGOCD_PASS> --insecure
-        //             argocd app sync logo-server
-        //             """
-        //         }
-        //     }
-        // }
+                            # Check if values.yaml exists
+                            if [ ! -f values.yaml ]; then
+                                echo "Error: values.yaml not found in the repository"
+                                exit 1
+                            fi
+
+                            # Update repository and tag in values.yaml
+                            sed -i 's|repository:.*|repository: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}|g' values.yaml
+                            sed -i 's|tag:.*|tag: "${IMAGE_TAG}"|g' values.yaml
+
+                            # Configure git user
+                            git config user.email "jenkins@ci.com"
+                            git config user.name "Jenkins"
+
+                            # Add, commit, and push changes
+                            git add values.yaml
+                            git commit -m "Update image to ${ECR_REPO}:${IMAGE_TAG}" || echo "No changes to commit"
+
+                            # Push to the correct branch
+                            git push origin ${env.BRANCH_NAME}
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+
     }
 
     post {
