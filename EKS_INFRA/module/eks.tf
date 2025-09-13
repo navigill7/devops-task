@@ -32,8 +32,8 @@ resource "aws_eks_cluster" "eks" {
   // }
 
    depends_on = [ 
-    aws_iam_role_policy_attachment.eks_AmazonEKSClusterPolicy,
-    aws_iam_role_policy_attachment.eks_AmazonEKSVPCResourceController]
+    aws_iam_role_policy_attachment.AmazonEKSClusterPolicy,
+    aws_iam_role_policy_attachment.AmazonEKSVPCResourceController]
    kubernetes_network_config {
      
    }
