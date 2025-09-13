@@ -48,17 +48,17 @@ pipeline {
             }
         }
 
-        // stage('Trivy Scan') {
-        //     steps {
-        //         sh "trivy image --exit-code 0 --severity HIGH,CRITICAL $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG"
-        //     }
-        // }
+        stage('Trivy Scan') {
+            steps {
+                sh "trivy image --exit-code 0 --severity HIGH,CRITICAL ${ECR_REPO}:${IMAGE_TAG}"
+            }
+        }
 
-        // stage('Push to ECR') {
-        //     steps {
-        //         sh "docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG"
-        //     }
-        // }
+        stage('Push to ECR') {
+            steps {
+                sh "docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
+            }
+        }
 
         // stage('Terraform Check EKS') {
         //     steps {
