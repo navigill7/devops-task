@@ -7,7 +7,7 @@ pipeline {
         AWS_ACCESS_KEY_ID = credentials('aws-access-key')
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
         ECR_REPO = "devops_task"
-        SONARQUBE =  tool "Sonarqube Scanner" 
+        SONARQUBE =  tool "SonarQube" 
         IMAGE_TAG = "${env.BUILD_NUMBER}"
         HELM_REPO = "https://github.com/navigill7/devops-task.git" 
     }
