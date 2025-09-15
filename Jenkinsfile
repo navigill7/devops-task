@@ -77,7 +77,7 @@ pipeline {
                             terraform init -input=false
                             terraform validate
                             terraform plan -out=tfplan -input=false
-                            terraform apply -input=false -auto-approve tfplan || true
+                            terraform destroy -auto-approve 
                             terraform output eks_cluster_endpoint || echo 'EKS cluster not ready'
                             """
                         }
