@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: 647198474080.dkr.ecr.us-east-1.amazonaws.com/devops_task
-  tag: "1013"
+  tag: "1014"
   pullPolicy: IfNotPresent
 
 service:
